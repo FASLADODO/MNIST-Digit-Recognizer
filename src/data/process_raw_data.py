@@ -1,8 +1,9 @@
+
 import pandas as pd
 import numpy as np
-import os
+from pathlib import Path
 from sklearn.model_selection import train_test_split
-import logging # log intermediate steps that have been completed
+import logging
 
                 
 # main function, requires the project directory path
@@ -12,9 +13,9 @@ def main(project_dir):
     logger.info('processing raw data')
     
     # set the path of the raw data
-    raw_data_path = os.path.join(os.path.pardir, 'data', 'raw')
-    labeled_file_path = os.path.join(raw_data_path, 'train.csv')
-    unlabeled_file_path = os.path.join(raw_data_path, 'test.csv')
+    raw_data_path = project_dir / 'data' / 'raw'
+    labeled_file_path = raw_data_path / 'train.csv'
+    unlabeled_file_path = raw_data_path / 'test.csv'
 
     # read the data with all default parameters
     labeled_df = pd.read_csv(labeled_file_path, index_col = None)
@@ -50,26 +51,24 @@ def main(project_dir):
                                          test_size = 0.2,
                                          random_state = 42,
                                          stratify = labeled_df.label)
-    logger.info('performed 50-50 train-test split')
+    logger.info('performed 80-20 train-test split')
     
     # define file paths for processed data
-    processed_data_path = os.path.join(os.path.pardir, 'data', 'processed')
-    write_train_processed_path = os.path.join(processed_data_path, 'train_processed.csv')
-    write_test_processed_path = os.path.join(processed_data_path, 'test_processed.csv')
-    write_unlabeled_processed_path = os.path.join(processed_data_path, 'unlabeled_processed.csv')
+    processed_data_path = project_dir / 'data' / 'processed'
+    write_train_processed_path = processed_data_path / 'train_processed.csv'
+    write_test_processed_path = processed_data_path / 'test_processed.csv'
+    write_unlabeled_processed_path = processed_data_path / 'unlabeled_processed.csv'
     
     # write processed data to files
     train_df.to_csv(write_train_processed_path, index = False)
     test_df.to_csv(write_test_processed_path, index = False)
     unlabeled_df.to_csv(write_unlabeled_processed_path, index = False)
-    logger.info('processed data written to files')
-    
+    logger.info('processed data written to files')    
     
     
 if __name__ == '__main__':
-    # getting script file name and append parent directory twice
-    # helps to move two levels up since path is /digit_recognizer/src/data
-    project_dir = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
+    # path to project directory
+    project_dir = Path.home() / 'Python' / 'Kaggle' / 'digit_recognizer'
     
     # set up logger
     log_fmt = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'

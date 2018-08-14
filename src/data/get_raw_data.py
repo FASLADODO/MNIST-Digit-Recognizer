@@ -1,5 +1,6 @@
-# -*- coding: utf-8 -*-
+
 import os
+from pathlib import Path
 from dotenv import find_dotenv, load_dotenv
 from requests import session
 import logging # log intermediate steps that have been completed
@@ -16,9 +17,9 @@ payload = {
 def extract_data(login_url, data_url, file_path):
     with session() as c:
         response = c.get(login_url).text
-        AFToken = response[response.index('antiForgeryToken')+19:response.index('isAnonymous: ')-12]
-        payload['__RequestVerificationToken']=AFToken
-        c.post(login_url + "?isModal=true&returnUrl=/", data=payload)
+        AFToken = response[response.index('antiForgeryToken') + 19 : response.index('isAnonymous: ') - 12]
+        payload['__RequestVerificationToken'] = AFToken
+        c.post(login_url + "?isModal=true&returnUrl=/", data = payload)
         with open(file_path, 'wb') as handle:
             # open url as a stream
             response = c.get(data_url, stream = True)
@@ -38,9 +39,9 @@ def main(project_dir):
     testURL = 'https://www.kaggle.com/c/digit-recognizer/download/test.csv'
     
     # file paths (local)
-    raw_data_path = os.path.join(os.path.pardir, 'data', 'raw')
-    train_data_path = os.path.join(raw_data_path, 'train.csv')
-    test_data_path = os.path.join(raw_data_path, 'test.csv')
+    raw_data_path = project_dir / 'data' / 'raw'
+    train_data_path = raw_data_path / 'train.csv'
+    test_data_path = raw_data_path / 'test.csv'
 
     # extract data
     extract_data(loginURL, trainURL, train_data_path)
@@ -48,9 +49,8 @@ def main(project_dir):
     logger.info('downloaded raw training and test data')
     
 if __name__ == '__main__':
-    # getting script file name and append parent directory twice
-    # helps to move two levels up since path is /digit_recognizer/src/data
-    project_dir = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
+    # path to project directory
+    project_dir = Path.home() / 'Python' / 'Kaggle' / 'digit_recognizer'
     
     # set up logger
     log_fmt = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
