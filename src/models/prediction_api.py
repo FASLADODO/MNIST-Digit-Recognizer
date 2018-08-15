@@ -13,7 +13,7 @@ app = Flask(__name__)
 # create file paths
 project_dir = Path.home() / 'Python' / 'Kaggle' / 'digit_recognizer'
 pca_file_path = project_dir / 'models' / 'pca_50.pkl'
-model_file_path = project_dir / 'models' / 'knn_model.pkl'
+model_file_path = project_dir / 'models' / 'rbf_svc_model.pkl'
 
 # load pca and model
 pca = joblib.load(pca_file_path)
